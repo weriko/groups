@@ -1,4 +1,5 @@
-import Group, Cond
+from Group import Group
+from Cond import Cond
 cards = [k for s in [[str(i)+j for i in range(1,11)] + [i+j for i in "JQK"] for j in "PDCT" ] for k in s]
 
 
