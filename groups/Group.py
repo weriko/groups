@@ -1,4 +1,4 @@
-import Cond
+from Cond import Cond
 class Group:
     def __init__(self,cond ,iscomp = False, condU = None):
         #cond -> Any of these conditions must be met to include in the set
