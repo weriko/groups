@@ -1,11 +1,13 @@
 from Cond import Cond
+from Diagram import Diagram
+
 class Group:
-    def __init__(self,cond ,iscomp = False, condU = None):
+    def __init__(self,cond ,iscomp = False, condU = None, name = None):
         #cond -> Any of these conditions must be met to include in the set
                  #must be a function that returns a bool
         #condU -> All elements must met this condition to be included in the set
         self.condU=condU#Universe condition
-        
+        self.name=name
         if not isinstance(cond,Cond):
             self.cond = Cond(cond)
         else:
@@ -49,3 +51,28 @@ class Group:
         return self.union(x)
     def __radd__(self,x):
         return x.union(self)
+    
+    @staticmethod
+    def get_all(s, *groups, plot=False): #could this be more efficient? maybe. returns members of all the intersections of n groups
+        
+        
+        for i,x in enumerate(groups):
+            if x.name is None:
+                x.name=i #need to fix this
+        names = [frozenset(i) for i in Diagram.powerset([x.name for x in groups])]
+    
+        t=[]
+        for i in s:
+            temp = []
+            for g in groups:
+                if i in g:
+                    temp.append(g.name)
+            t.append(frozenset(temp))
+        
+        c = {i:0 for i in names}
+        for i in t:
+            c[i]+=1
+        if not plot:
+            return c
+        
+        Diagram.create_diagram(len(groups),names=[x.name for x in groups], quantities=c)
