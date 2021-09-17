@@ -67,7 +67,8 @@ class Group:
             for g in groups:
                 if i in g:
                     temp.append(g.name)
-            t.append(frozenset(temp))
+            if temp:
+                t.append(frozenset(temp))
         
         c = {i:0 for i in names}
         for i in t:
