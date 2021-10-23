@@ -1,12 +1,13 @@
-
 import itertools
 class Node:
-  def __init__(self, nodes, prob=0, name=None, level=0):
+  def __init__(self, nodes, prob=0, name=None, level=0, parent=None):
     self.prob = prob
     self.nodes = nodes
     self.name = name
     self.level=level
+    self.parent = parent
   def add_node(self,node):
+    node.parent = self
     self.nodes.append(node)
   def is_exhaustive(self):
     if not self.nodes:
@@ -49,16 +50,18 @@ class Node:
 
     if lev==0:
       return root
+  def mult_by_parent(self):
+    return self.prob*self.parent.prob
   
-d = {"H":{
-        "prob":0.7,
-        "Azul":{"prob":0.3},
-        "Rojo":{"prob":0.7}
+d = {"E":{
+        "prob":0.005,
+        "PP":{"prob":0.99},
+        "PN":{"prob":0.01}
 },
-     "M":{
-        "prob":0.3,
-        "Azul":{"prob":0.4},
-        "Rojo":{"prob":0.6}
+     "NE":{
+        "prob":0.995,
+        "PP":{"prob":0.01},
+        "PN":{"prob":0.99}
 },}
 
 def require_exhaustive(func):
@@ -81,10 +84,22 @@ def require_exhaustive(func):
 
 
 
-@require_exhaustive
 def bayes(node=None, PAname=None, PBname=None):
-  return PBA*PA/suma(PL)
 
+  
+  PA = node.find_by_name(PAname)
+  PB = node.find_by_name(PBname)
+  idx = next((i for i,x in enumerate(node.nodes) if x.name == PAname), None)
+
+  s = sum([x.mult_by_parent() for x in PB])
+  
+  return PA[0].prob*PB[idx].prob/s
+  
+
+
+
+  
+  
 
 nodes = [Node([],prob=0.3), Node([],prob=0.7)]
 n = Node(nodes, name="root")
@@ -92,8 +107,8 @@ n = Node(nodes, name="root")
 #print(d)
 t = Node.parse_dict(d)
 
-t.show()
-print(t.is_exhaustive())
-print(t.find_by_name("Azul"))
+#t.show()
+#print(t.is_exhaustive())
+#print(t.find_by_name("Azul"))
 
-bayes(t)
+bayes(t, PAname = "NE", PBname = "PP")
